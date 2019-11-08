@@ -1,24 +1,33 @@
-import json
-from numpy import random, dot, heaviside, exp, array
-class Neurona(object):
-    def __init__(self,entradas=3,epocas=10):
-        random.seed(1)
-        self.entradas = entradas
-        self.pesos = 1 * random.random((self.entradas,1)) -1 # pesos aleatorios
-        self.epocas = epocas
-        self.resultados = []
+import numpy as np
 
-    def escalon(self,x):
-        return heaviside(x,0)
+class Perceptron(object):
+
+    def __init__(self, num_entradas, epocas=100, razon_aprendizaje=0.01):
+        self.epocas = epocas
+        self.razon_aprendizaje = razon_aprendizaje
+        self.pesos = np.zeros(num_entradas + 1)
+        self.resultados = []
+           
+    def pensar(self, entradas):
+        self.suma = np.dot(entradas, self.pesos[1:]) + self.pesos[0]
+        if self.suma > 0:
+          return 1
+        return 0            
+
+    def train(self, entradas_entrenamiento, salidas):
+        for _ in range(self.epocas):
+            self.pesos_ant = self.pesos.tolist()
+            for entrada, salida in zip(entradas_entrenamiento, salidas):
+                resultado = self.pensar(entrada)
+                self.pesos[1:] += self.razon_aprendizaje * (salida - resultado) * entrada
+                self.pesos[0] += self.razon_aprendizaje * (salida - resultado)
+            self.pesos_act = self.pesos.tolist()
+            if self.calcular_estabilidad() == True:
+                break
+            self.resultados.append({"epoca":_+1,"pesos anteriores":self.pesos_ant,"pesos actuales":self.pesos_act})
     
-    def entrenar(self,entrada,salidas_esperadas):
-        for epoca in range(self.epocas):
-            salida = self.pensar(entrada)
-            error = salidas_esperadas - salida
-            ajuste = dot(entrada.T,error*.2)
-            pesos_ant = self.pesos
-            self.pesos += (ajuste - 1)
-            self.resultados.append({"epoca_"+str(epoca):{"entrada":entrada.tolist(),"salida esperada":salidas_esperadas.tolist(),"pesos":self.pesos.tolist(),"salidas":salida.tolist(),"error":error.tolist(),"pesos nuevos":self.pesos.tolist()}})
-    
-    def pensar(self,entrada):
-        return self.escalon(dot(entrada,self.pesos))
+    def calcular_estabilidad(self):
+        if self.pesos_ant == self.pesos_act:
+            return True
+        else:
+            return False
