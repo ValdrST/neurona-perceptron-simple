@@ -21,7 +21,7 @@ if __name__ == "__main__":
     num_entradas = int(argv[3])
     neurona = Perceptron(num_entradas,epocas=10)
     entrada, salida = parse_datos(argv[1])
-    neurona.train(entrada,salida)
+    neurona.entrenar(entrada,salida)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(neurona.resultados)
     f = open(argv[2],"w")

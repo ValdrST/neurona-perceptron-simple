@@ -14,7 +14,7 @@ class Perceptron(object):
           return 1
         return 0            
 
-    def train(self, entradas_entrenamiento, salidas):
+    def entrenar(self, entradas_entrenamiento, salidas):
         for _ in range(self.epocas):
             self.pesos_ant = self.pesos.tolist()
             for entrada, salida in zip(entradas_entrenamiento, salidas):
